@@ -105,6 +105,27 @@ def write_response ( l_response, nombre ):
         print( '\n\t [*] El archivo ' + nombre + '.txt' + ' se generó exitosamente. \n' )
     except:
         print ( '\n\t [!] Error al crear ' + nombre + '.txt \n' )
+        
+
+# > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > >
+
+
+def diff_mean( l_response_fitted ):
+
+    response_diff_m = []
+    l_response_diff_m = []
+
+    for response in l_response_fitted:
+        response_diff_m = []
+        for i in range( len( response ) ):
+            if i > 0 and i < len( response ) - 1:
+                response_diff_m.append( ( response[i+1] - response[i-1]) / 2 )
+            else:
+                response_diff_m.append( 0 )
+
+        l_response_diff_m.append(response_diff_m)
+
+    return l_response_diff_m
 
 
 # > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > >
@@ -228,6 +249,10 @@ def main ():
 
     l_peaks_alone = get_peaks ( l_response_fitted )
     l_peaks = fill_peaks ( l_peaks_alone )
+    
+    # Busca las derivadas
+
+    l_response_diff_m = diff_mean( l_response_fitted )
 
     # -- [4] Genera los archivos
 
