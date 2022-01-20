@@ -2,6 +2,9 @@
 # Mudanza_xD.ipynb
 
 
+# find_marlene ( l_response_fitted, l_peaks ) -> for elem in l_peaks: elem[1]
+# list[ndarray]
+
 # > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > >
 
 
@@ -11,8 +14,7 @@ from unittest import signals
 import  numpy               as  np
 import  matplotlib.pyplot   as  plt
 import  bioread
-from    scipy.signal import savgol_filter, find_peaks, find_peaks_cwt
-# agregar find peaks
+from    scipy.signal import savgol_filter, find_peaks
 
 
 # > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > >
@@ -105,25 +107,23 @@ def write_response ( l_response, nombre ):
         print( '\n\t [*] El archivo ' + nombre + '.txt' + ' se generó exitosamente. \n' )
     except:
         print ( '\n\t [!] Error al crear ' + nombre + '.txt \n' )
-        
+
+
 
 # > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > >
-
-
 def diff_mean( l_response_fitted ):
 
-    response_diff_m = []
     l_response_diff_m = []
 
     for response in l_response_fitted:
-        response_diff_m = []
+        response_diff_m = np.array([])
         for i in range( len( response ) ):
             if i > 0 and i < len( response ) - 1:
-                response_diff_m.append( ( response[i+1] - response[i-1]) / 2 )
+                response_diff_m = np.append( response_diff_m, ( response[i+1] - response[i-1]) / 2 )
             else:
-                response_diff_m.append( 0 )
+                response_diff_m = np.append( response_diff_m, 0 )
 
-        l_response_diff_m.append(response_diff_m)
+        l_response_diff_m.append( response_diff_m )
 
     return l_response_diff_m
 
@@ -230,7 +230,7 @@ def plot_response_IO_artefact( response, response_fitted, l_peaks, RESPONSE_SIZE
 
 def main ():
 
-    RESPONSE_SIZE = 5000
+    RESPONSE_SIZE = 2500
 
     acq_name = "/home/luuisraam/Escritorio/Mudanza/R54 Ep + Lev SE 21 noviembre 2018 Registro 8 abril 2019 HD GD Señal 5 Curva IO Pre Lev.acq"
 
@@ -249,16 +249,18 @@ def main ():
 
     l_peaks_alone = get_peaks ( l_response_fitted )
     l_peaks = fill_peaks ( l_peaks_alone )
+
     
     # Busca las derivadas
 
     l_response_diff_m = diff_mean( l_response_fitted )
 
+
     # -- [4] Genera los archivos
 
     write_response( l_response, acq_name + "_Respuesta" )
     write_response( l_response_fitted, acq_name + "_Respuesta_suave" )
-
+    write_response( l_response_diff_m, acq_name + "_Derivadas" )
 
     plot_response_IO_artefact( response, response_fitted, l_peaks, RESPONSE_SIZE, acq_name )
 
